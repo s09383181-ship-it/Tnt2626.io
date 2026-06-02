@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <title>TNT AI Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- FontAwesome -->
+  <script src="https://kit.fontawesome.com/a2c9f6f2f0.js" crossorigin="anonymous"></script>
+
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+    body {
+      font-family: 'Vazirmatn', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    .glass {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 1rem;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      backdrop-filter: blur(18px) saturate(160%);
+      -webkit-backdrop-filter: blur(18px) saturate(160%);
+    }
+    .glass-light {
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 1rem;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      backdrop-filter: blur(18px) saturate(160%);
+      -webkit-backdrop-filter: blur(18px) saturate(160%);
+    }
+    .msg-enter {
+      animation: msgEnter 0.25s ease-out;
+    }
+    @keyframes msgEnter {
+      from { opacity: 0; transform: translateY(8px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .bottom-safe {
+      padding-bottom: env(safe-area-inset-bottom, 0.75rem);
+    }
+    .drawer-enter {
+      animation: drawerEnter 0.25s ease-out;
+    }
+    @keyframes drawerEnter {
+      from { transform: translateX(100%); }
+      to { transform: translateX(0); }
+    }
+    .tictactoe-cell {
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .promo-glow {
+      box-shadow:
+        0 0 25px rgba(250, 204, 21, 0.25),
+        0 0 60px rgba(56, 189, 248, 0.25);
+      animation: promoPulse 3s ease-in-out infinite;
+    }
+    @keyframes promoPulse {
+      0% { box-shadow: 0 0 18px rgba(250, 204, 21, 0.18), 0 0 40px rgba(56, 189, 248, 0.18); }
+      50% { box-shadow: 0 0 32px rgba(250, 204, 21, 0.35), 0 0 70px rgba(56, 189, 248, 0.35); }
+      100% { box-shadow: 0 0 18px rgba(250, 204, 21, 0.18), 0 0 40px rgba(56, 189, 248, 0.18); }
+    }
+  </style>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: { 500: '#F97316', 600: '#EA580C', 700: '#C2410C' },
+            accent: { 500: '#22D3EE', 600: '#06B6D4' }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+
+  <div class="flex flex-1 max-w-6xl mx-auto w-full">
+
+    <!-- Sidebar (desktop) -->
+    <aside class="hidden md:flex md:flex-col w-64 p-4 space-y-4">
+      <div class="glass w-full p-4 flex items-center justify-between">
+        <div>
+          <h1 class="text-lg font-bold tracking-tight">TNT AI Dashboard</h1>
+          <p class="text-xs text-slate-300 mt-1">داشبورد آفلاین TNT</p>
+        </div>
+        <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900/60 text-primary-400">
+          <i class="fa-solid fa-bomb"></i>
+        </span>
+      </div>
+
+      <nav class="glass flex-1 p-3 space-y-1 text-sm">
+        <button data-target="view-chat"
+                class="nav-link w-full flex items-center justify-between px-3 py-2 rounded-xl transition-all hover:bg-slate-800/70 active-link">
+          <span class="flex items-center gap-2">
+            <i class="fa-solid fa-comments text-accent-500"></i>
+            <span>چت آفلاین</span>
+          </span>
+          <span class="text-[10px] text-slate-400">TNT Bot</span>
+        </button>
+
+        <button data-target="view-calculator"
+                class="nav-link w-full flex items-center justify-between px-3 py-2 rounded-xl transition-all hover:bg-slate-800/70">
+          <span class="flex items-center gap-2">
+            <i class="fa-solid fa-calculator text-emerald-400"></i>
+            <span>ماشین حساب</span>
+          </span>
+          <span class="text-[10px] text-slate-400">Math</span>
+        </button>
+
+        <button data-target="view-image"
+                class="nav-link w-full flex items-center justify-between px-3 py-2 rounded-xl transition-all hover:bg-slate-800/70">
+          <span class="flex items-center gap-2">
+            <i class="fa-solid fa-wand-magic-sparkles text-pink-400"></i>
+            <span>ویرایش تصویر</span>
+          </span>
+          <span class="text-[10px] text-slate-400">Canvas</span>
+        </button>
+
+        <button data-target="view-game"
+                class="nav-link w-full flex items-center justify-between px-3 py-2 rounded-xl transition-all hover:bg-slate-800/70">
+          <span class="flex items-center gap-2">
+            <i class="fa-solid fa-gamepad text-indigo-400"></i>
+            <span>بازی دوز</span>
+          </span>
+          <span class="text-[10px] text-slate-400">Game</span>
+        </button>
+      </nav>
+
+      <div class="space-y-3">
+        <button id="themeToggleDesktop"
+                class="glass w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs hover:bg-slate-800/70 transition">
+          <span class="flex items-center gap-2">
+            <i class="fa-solid fa-moon text-indigo-300"></i>
+            <span>حالت تیره / روشن</span>
+          </span>
+          <span id="themeLabelDesktop" class="text-[10px] text-slate-400">تیره</span>
+        </button>
+
+        <a href="https://rubika.ir/ZODIAC_MAFIANIGHTS" target="_blank"
+           class="glass w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs bg-gradient-to-l from-primary-600/70 to-accent-600/70 hover:from-primary-600 hover:to-accent-600 transition">
+          <i class="fa-solid fa-link"></i>
+          <span>کانال سازنده در روبیکا</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="flex-1 flex flex-col px-3 md:px-4 py-3 md:py-4 space-y-3 md:space-y-4">
+
+      <!-- Top bar (mobile) -->
+      <header class="md:hidden flex items-center justify-between mb-1">
+        <button id="openDrawer"
+                class="glass-light flex items-center justify-center h-10 w-10 rounded-2xl text-slate-100">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="flex flex-col items-center">
+          <span class="text-sm font-semibold">TNT AI Dashboard</span>
+          <span class="text-[10px] text-slate-300 mt-0.5">نسخه آفلاین</span>
+        </div>
+        <button id="themeToggleMobile"
+                class="glass-light flex items-center justify-center h-10 w-10 rounded-2xl text-indigo-200">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+      </header>
+
+      <!-- Status / info bar -->
+      <section class="glass w-full p-3 md:p-4 flex flex-col gap-3 text-xs md:text-sm">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
+              <i class="fa-solid fa-circle-check"></i>
+            </span>
+            <div>
+              <p class="font-medium">حالت آفلاین فعال است</p>
+              <p class="text-[11px] text-slate-300 mt-0.5">TNT Bot روی دستگاه تو کار می‌کند؛ بدون اینترنت.</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 text-[11px] text-slate-300">
+            <span class="flex items-center gap-1">
+              <i class="fa-solid fa-database text-amber-300"></i>
+              <span>چت و تم ذخیره می‌شود</span>
+            </span>
+            <span class="hidden sm:inline-flex h-6 px-2 items-center rounded-full bg-slate-900/60 text-[10px]">
+              در چت بنویس «راهنما» تا همه دستورات را ببینی
+            </span>
+          </div>
+        </div>
+
+        <!-- Quick navigation pills -->
+        <div class="flex flex-wrap gap-2 mt-1">
+          <button data-target="view-chat"
+                  class="quick-nav glass-light px-3 py-1.5 rounded-full text-[11px] flex items-center gap-1 hover:bg-slate-800/70">
+            <i class="fa-solid fa-comments text-accent-400"></i>
+            <span>چت آفلاین</span>
+          </button>
+          <button data-target="view-calculator"
+                  class="quick-nav glass-light px-3 py-1.5 rounded-full text-[11px] flex items-center gap-1 hover:bg-slate-800/70">
+            <i class="fa-solid fa-calculator text-emerald-400"></i>
+            <span>ماشین حساب</span>
+          </button>
+          <button data-target="view-image"
+                  class="quick-nav glass-light px-3 py-1.5 rounded-full text-[11px] flex items-center gap-1 hover:bg-slate-800/70">
+            <i class="fa-solid fa-wand-magic-sparkles text-pink-400"></i>
+            <span>ویرایش تصویر</span>
+          </button>
+          <button data-target="view-game"
+                  class="quick-nav glass-light px-3 py-1.5 rounded-full text-[11px] flex items-center gap-1 hover:bg-slate-800/70">
+            <i class="fa-solid fa-gamepad text-indigo-400"></i>
+            <span>بازی دوز</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Views container -->
+      <section class="flex-1 flex flex-col space-y-3 md:space-y-4">
+
+        <!-- Chat view -->
+        <div id="view-chat" class="view flex-1 flex flex-col gap-3 md:gap-4">
+
+          <!-- Promo card above chat -->
+          <div class="glass-light promo-glow p-4 flex flex-col md:flex-row items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="h-11 w-11 rounded-2xl bg-gradient-to-tr from-yellow-400 via-amber-500 to-pink-500 flex items-center justify-center text-slate-950">
+                <i class="fa-solid fa-bolt text-xl"></i>
+              </div>
+              <div>
+                <p class="text-sm md:text-base font-bold text-yellow-300 drop-shadow">
+                  چیت تمامی بازیها!
+                </p>
+                <p class="text-[11px] md:text-xs text-slate-100/90 mt-1 leading-relaxed">
+                  اگه می‌خوای چیت تمامی بازی‌ها رو به صورت کاملاً رایگان داشته باشی، فقط کافیه عضو کانال TNT بشی.
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="hidden sm:inline text-[10px] text-slate-300">
+                عضویت رایگان • آپدیت مداوم • ترفندهای خاص
+              </span>
+              <a href="https://rubika.ir/ZODIAC_MAFIANIGHTS" target="_blank"
+                 class="relative inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-l from-amber-400 via-orange-500 to-pink-500 text-slate-950 text-xs font-semibold shadow-lg shadow-orange-900/50 overflow-hidden">
+                <span class="absolute inset-0 bg-white/20 blur-2 opacity-40 pointer-events-none"></span>
+                <i class="fa-solid fa-star"></i>
+                <span>عضو شدن در کانال</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="glass flex-1 flex flex-col overflow-hidden">
+            <div class="flex items-center justify-between px-4 py-3 border-b border-slate-700/60">
+              <div class="flex items-center gap-2">
+                <span class="inline-flex h-8 w-8 items-center justify-center rounded-2xl bg-primary-600/40 text-accent-300">
+                  <i class="fa-solid fa-robot"></i>
+                </span>
+                <div>
+                  <p class="text-sm font-semibold">چت آفلاین TNT Bot</p>
+                  <p class="text-[11px] text-slate-300">جوک، داستان، معما، شعر، راهنما و سوالات روزمره</p>
+                </div>
+              </div>
+              <button id="clearChat"
+                      class="text-[11px] px-2 py-1 rounded-xl bg-slate-900/70 hover:bg-slate-800 text-slate-300 flex items-center gap-1">
+                <i class="fa-solid fa-trash-can text-red-400"></i>
+                <span>پاک کردن چت</span>
+              </button>
+            </div>
+
+            <div id="chatMessages" class="flex-1 overflow-y-auto px-3 md:px-4 py-3 space-y-2 text-sm">
+            </div>
+
+            <div class="border-t border-slate-700/60 px-3 md:px-4 py-3 bottom-safe">
+              <form id="chatForm" class="flex items-end gap-2">
+                <div class="flex-1 glass-light flex items-center px-3 py-2 rounded-2xl">
+                  <input id="chatInput" type="text" autocomplete="off"
+                         class="flex-1 bg-transparent outline-none text-sm placeholder:text-slate-400 text-right"
+                         placeholder="هر سوال روزمره‌ای، یا کلمات: جوک، داستان، معما، شعر، راهنما، ماشین حساب، ویرایش تصویر، دوز ..." />
+                </div>
+                <button type="submit"
+                        class="h-10 w-10 rounded-2xl bg-gradient-to-l from-primary-600 to-accent-600 flex items-center justify-center text-white shadow-lg shadow-primary-900/40">
+                  <i class="fa-solid fa-paper-plane text-sm -rotate-45"></i>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Calculator view -->
+        <div id="view-calculator" class="view hidden flex-1 flex flex-col gap-3 md:gap-4">
+          <div class="glass p-4 flex flex-col gap-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="inline-flex h-8 w-8 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-300">
+                  <i class="fa-solid fa-calculator"></i>
+                </span>
+                <div>
+                  <p class="text-sm font-semibold">ماشین حساب TNT</p>
+                  <p class="text-[11px] text-slate-300">چهار عمل اصلی با پاسخ سریع</p>
+                </div>
+              </div>
+              <span class="text-[11px] text-slate-400">بدون رفرش صفحه</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+              <div class="space-y-2">
+                <label class="text-xs text-slate-300">عدد اول</label>
+                <input id="calcA" type="number"
+                       class="w-full glass-light px-3 py-2 rounded-xl bg-transparent outline-none text-right"
+                       placeholder="مثلاً ۱۲" />
+              </div>
+              <div class="space-y-2">
+                <label class="text-xs text-slate-300">عملگر</label>
+                <select id="calcOp"
+                        class="w-full glass-light px-3 py-2 rounded-xl bg-transparent outline-none text-right">
+                  <option value="+">جمع (+)</option>
+                  <option value="-">تفریق (-)</option>
+                  <option value="*">ضرب (×)</option>
+                  <option value="/">تقسیم (÷)</option>
+                </select>
+              </div>
+              <div class="space-y-2">
+                <label class="text-xs text-slate-300">عدد دوم</label>
+                <input id="calcB" type="number"
+                       class="w-full glass-light px-3 py-2 rounded-xl bg-transparent outline-none text-right"
+                       placeholder="مثلاً ۴" />
+              </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+              <button id="calcBtn"
+                      class="flex-1 bg-gradient-to-l from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white text-sm py-2 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/40">
+                <i class="fa-solid fa-equals"></i>
+                <span>محاسبه</span>
+              </button>
+              <div class="flex-1 glass-light px-3 py-2 rounded-xl flex items-center justify-between text-xs">
+                <span class="text-slate-300">نتیجه:</span>
+                <span id="calcResult" class="font-semibold text-emerald-300 text-sm">—</span>
+              </div>
+            </div>
+
+            <p class="text-[11px] text-slate-400">
+              در چت اگر بنویسی «ماشین حساب»، TNT Bot تو را به این بخش هدایت می‌کند.
+            </p>
+          </div>
+        </div>
+
+        <!-- Image editor view -->
+        <div id="view-image" class="view hidden flex-1 flex flex-col gap-3 md:gap-4">
+          <div class="glass p-4 flex flex-col gap-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="inline-flex h-8 w-8 items-center justify-center rounded-2xl bg-pink-500/15 text-pink-300">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </span>
+                <div>
+                  <p class="text-sm font-semibold">ویرایش تصویر TNT</p>
+                  <p class="text-[11px] text-slate-300">افکت‌های نئونی، سایبرپانک، قدیمی و بیشتر با Canvas</p>
+                </div>
+              </div>
+              <span class="text-[11px] text-slate-400">Canvas API</span>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-4">
+              <div class="md:w-1/3 space-y-3 text-sm">
+                <div class="space-y-2">
+                  <label class="text-xs text-slate-300">آپلود تصویر</label>
+                  <input id="imageInput" type="file" accept="image/*"
+                         class="w-full text-xs file:mr-2 file:px-3 file:py-1.5 file:rounded-xl file:border-0 file:bg-primary-600 file:text-white file:text-xs file:cursor-pointer glass-light rounded-xl px-2 py-1.5" />
+                </div>
+
+                <div class="space-y-2">
+                  <label class="text-xs text-slate-300">افکت</label>
+                  <select id="effectSelect"
+                          class="w-full glass-light px-3 py-2 rounded-xl bg-transparent outline-none text-right">
+                    <option value="none">بدون افکت</option>
+                    <option value="blur">Blur</option>
+                    <option value="grayscale">Grayscale</option>
+                    <option value="sepia">Sepia</option>
+                    <option value="neon">Neon</option>
+                    <option value="cyberpunk">Cyberpunk</option>
+                    <option value="vintage">Vintage</option>
+                    <option value="sharpen">Sharpen</option>
+                    <option value="bright">Bright</option>
+                    <option value="contrast">High Contrast</option>
+                    <option value="invert">Invert</option>
+                    <option value="hue">Hue Rotate</option>
+                  </select>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                  <button id="applyEffect"
+                          class="w-full bg-gradient-to-l from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white text-xs py-2 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-pink-900/40">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>اعمال افکت</span>
+                  </button>
+                  <button id="downloadImage"
+                          class="w-full bg-gradient-to-l from-emerald-600/80 to-accent-600/80 hover:from-emerald-500 hover:to-accent-500 text-xs py-2 rounded-xl flex items-center justify-center gap-2 text-white shadow-lg shadow-emerald-900/40">
+                    <i class="fa-solid fa-download"></i>
+                    <span>دانلود تصویر خروجی</span>
+                  </button>
+                </div>
+
+                <p class="text-[11px] text-slate-400">
+                  در چت اگر بنویسی «ویرایش تصویر» یا «عکس»، TNT Bot تو را به این بخش می‌آورد.
+                </p>
+              </div>
+
+              <div class="md:flex-1 glass-light rounded-2xl flex items-center justify-center overflow-hidden min-h-[220px]">
+                <canvas id="imageCanvas" class="max-w-full max-h-[360px] rounded-2xl bg-slate-900/60"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tic Tac Toe view -->
+        <div id="view-game" class="view hidden flex-1 flex flex-col gap-3 md:gap-4">
+          <div class="glass p-4 flex flex-col gap-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="inline-flex h-8 w-8 items-center justify-center rounded-2xl bg-indigo-500/15 text-indigo-300">
+                  <i class="fa-solid fa-gamepad"></i>
+                </span>
+                <div>
+                  <p class="text-sm font-semibold">بازی دوز TNT</p>
+                  <p class="text-[11px] text-slate-300">بازی ۳×۳ با حالت ربات و دو نفره</p>
+                </div>
+              </div>
+              <span class="text-[11px] text-slate-400">Tic Tac Toe</span>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-4 items-stretch">
+              <div class="md:w-1/3 space-y-3 text-sm">
+                <div class="space-y-2">
+                  <p class="text-xs text-slate-300">
+                    حالت بازی را انتخاب کن:
+                  </p>
+                  <div class="flex gap-2">
+                    <button id="modeBot"
+                            class="flex-1 text-[11px] px-3 py-1.5 rounded-xl bg-slate-900/80 border border-slate-700 flex items-center justify-center gap-1 hover:bg-slate-800/80">
+                      <i class="fa-solid fa-robot text-pink-300"></i>
+                      <span>در برابر TNT</span>
+                    </button>
+                    <button id="modePvp"
+                            class="flex-1 text-[11px] px-3 py-1.5 rounded-xl bg-slate-900/80 border border-slate-700 flex items-center justify-center gap-1 hover:bg-slate-800/80">
+                      <i class="fa-solid fa-users text-emerald-300"></i>
+                      <span>دو نفره</span>
+                    </button>
+                  </div>
+                </div>
+
+                <p class="text-xs text-slate-300">
+                  در حالت ربات: تو <span class="font-semibold text-emerald-300">X</span> هستی و TNT
+                  <span class="font-semibold text-pink-300">O</span>.
+                </p>
+                <p class="text-xs text-slate-300">
+                  در حالت دو نفره: بازیکن ۱ با X و بازیکن ۲ با O بازی می‌کند.
+                </p>
+
+                <button id="resetGame"
+                        class="w-full bg-gradient-to-l from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs py-2 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-indigo-900/40">
+                  <i class="fa-solid fa-rotate-right"></i>
+                  <span>شروع دوباره بازی</span>
+                </button>
+
+                <div class="glass-light px-3 py-2 rounded-xl text-xs flex flex-col gap-1">
+                  <div class="flex items-center justify-between">
+                    <span class="text-slate-300">وضعیت بازی:</span>
+                    <span id="gameStatus" class="font-semibold text-emerald-300">نوبت توست</span>
+                  </div>
+                  <div class="flex items-center justify-between text-[11px] mt-1">
+                    <span class="flex items-center gap-1">
+                      <span class="inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-300 text-[10px]">X</span>
+                      <span>امتیاز تو / بازیکن ۱:</span>
+                    </span>
+                    <span id="scoreX" class="font-semibold text-emerald-300">0</span>
+                  </div>
+                  <div class="flex items-center justify-between text-[11px]">
+                    <span class="flex items-center gap-1">
+                      <span class="inline-flex h-4 w-4 items-center justify-center rounded-full bg-pink-500/20 text-pink-300 text-[10px]">O</span>
+                      <span>امتیاز TNT / بازیکن ۲:</span>
+                    </span>
+                    <span id="scoreO" class="font-semibold text-pink-300">0</span>
+                  </div>
+                  <div class="flex items-center justify-between text-[11px]">
+                    <span class="flex items-center gap-1">
+                      <i class="fa-solid fa-scale-balanced text-amber-300 text-[10px]"></i>
+                      <span>مساوی‌ها:</span>
+                    </span>
+                    <span id="scoreDraw" class="font-semibold text-amber-300">0</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="md:flex-1 flex items-center justify-center">
+                <div class="glass-light p-3 rounded-2xl">
+                  <div id="tictactoeBoard"
+                       class="grid grid-cols-3 gap-2 w-[260px] sm:w-[280px] md:w-[300px]">
+                    <button class="tictactoe-cell aspect-square rounded-2xl bg-slate-900/80 border border-slate-700 text-3xl sm:text-4xl font-bold flex items-center justify-center hover:bg-slate-800/80 transition"></button>
+                    <button class="tictactoe-cell aspect-square rounded-2xl bg-slate-900/80 border border-slate-700 text-3xl sm:text-4xl font-bold flex items-center justify-center hover:bg-slate-800/80 transition"></button>
+                    <button class="tictactoe-cell aspect-square rounded-2xl bg-slate-900/80 border border-slate-700 text-3xl sm:text-4xl font-bold flex items-center justify-center hover:bg-slate-800/80 transition"></button>
+                    <button class="tictactoe-cell aspect-square rounded-2xl bg-slate-900/80 border border-slate-700 text-3xl sm:text-4xl font-bold flex items-center justify-center hover:bg-slate-800/80 transition"></button>
+                    <button class="tictactoe-cell aspect-square rounded-2xl bg-slate-900/80 border border-slate-700 text-3xl sm:text-4xl font-bold flex items-center justify-center hover:bg-slate-800/80 transition"></button>
+                    <button class="tictactoe-cell aspect-square rounded-2xl bg-slate-900/80 border border-slate-700 text-3xl sm:text-4xl font-bold flex items-center justify-center hover:bg-slate-800/80 transition"></button>
+                    <button class="tictactoe-cell aspect-square rounded-2xl bg-slate-900/80 border border-slate-700 text-3xl sm:text-4xl font-bold flex items-center justify-center hover:bg-slate-800/80 transition"></button>
+                    <button class="tictactoe-cell aspect-square rounded-2xl bg-slate-900/80 border border-slate-700 text-3xl sm:text-4xl font-bold flex items-center justify-center hover:bg-slate-800/80 transition"></button>
+                    <button class="tictactoe-cell aspect-square rounded-2xl bg-slate-900/80 border border-slate-700 text-3xl sm:text-4xl font-bold flex items-center justify-center hover:bg-slate-800/80 transition"></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p class="text-[11px] text-slate-400">
+              در چت اگر بنویسی «دوز» یا «بازی»، TNT Bot تو را به این بخش می‌آورد.
+            </p>
+          </div>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <!-- Mobile drawer -->
+  <div id="drawerOverlay" class="fixed inset-0 bg-black/40 z-40 hidden">
+    <div class="absolute inset-y-0 right-0 w-64 bg-slate-950/95 border-l border-slate-800 drawer-enter flex flex-col">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="inline-flex h-8 w-8 items-center justify-center rounded-2xl bg-primary-600/40 text-accent-300">
+            <i class="fa-solid fa-bomb"></i>
+          </span>
+          <div>
+            <p class="text-sm font-semibold">TNT AI</p>
+            <p class="text-[10px] text-slate-400">داشبورد آفلاین</p>
+          </div>
+        </div>
+        <button id="closeDrawer"
+                class="h-8 w-8 rounded-2xl bg-slate-900/80 flex items-center justify-center text-slate-300">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <nav class="flex-1 p-3 space-y-1 text-sm">
+        <button data-target="view-chat"
+                class="nav-link w-full flex items-center justify-between px-3 py-2 rounded-xl transition-all hover:bg-slate-800/70 active-link">
+          <span class="flex items-center gap-2">
+            <i class="fa-solid fa-comments text-accent-500"></i>
+            <span>چت آفلاین</span>
+          </span>
+          <span class="text-[10px] text-slate-400">TNT Bot</span>
+        </button>
+
+        <button data-target="view-calculator"
+                class="nav-link w-full flex items-center justify-between px-3 py-2 rounded-xl transition-all hover:bg-slate-800/70">
+          <span class="flex items-center gap-2">
+            <i class="fa-solid fa-calculator text-emerald-400"></i>
+            <span>ماشین حساب</span>
+          </span>
+          <span class="text-[10px] text-slate-400">Math</span>
+        </button>
+
+        <button data-target="view-image"
+                class="nav-link w-full flex items-center justify-between px-3 py-2 rounded-xl transition-all hover:bg-slate-800/70">
+          <span class="flex items-center gap-2">
+            <i class="fa-solid fa-wand-magic-sparkles text-pink-400"></i>
+            <span>ویرایش تصویر</span>
+          </span>
+          <span class="text-[10px] text-slate-400">Canvas</span>
+        </button>
+
+        <button data-target="view-game"
+                class="nav-link w-full flex items-center justify-between px-3 py-2 rounded-xl transition-all hover:bg-slate-800/70">
+          <span class="flex items-center gap-2">
+            <i class="fa-solid fa-gamepad text-indigo-400"></i>
+            <span>بازی دوز</span>
+          </span>
+          <span class="text-[10px] text-slate-400">Game</span>
+        </button>
+      </nav>
+
+      <div class="p-3 space-y-2 border-t border-slate-800">
+        <button id="themeToggleDrawer"
+                class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs bg-slate-900/70 hover:bg-slate-800/80">
+          <span class="flex items-center gap-2">
+            <i class="fa-solid fa-moon text-indigo-300"></i>
+            <span>حالت تیره / روشن</span>
+          </span>
+          <span id="themeLabelDrawer" class="text-[10px] text-slate-400">تیره</span>
+        </button>
+
+        <a href="https://rubika.ir/ZODIAC_MAFIANIGHTS" target="_blank"
+           class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs bg-gradient-to-l from-primary-600/70 to-accent-600/70 hover:from-primary-600 hover:to-accent-600 transition">
+          <i class="fa-solid fa-link"></i>
+          <span>کانال سازنده</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help modal -->
+  <div id="helpModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+    <div class="absolute inset-0 bg-black/50"></div>
+    <div class="relative glass-light max-w-sm w-[92%] mx-auto p-4 rounded-2xl shadow-xl">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <span class="inline-flex h-8 w-8 items-center justify-center rounded-2xl bg-primary-600/40 text-accent-300">
+            <i class="fa-solid fa-circle-info"></i>
+          </span>
+          <div>
+            <p class="text-sm font-semibold">راهنمای TNT</p>
+            <p class="text-[11px] text-slate-300">دستورات قابل استفاده در چت</p>
+          </div>
+        </div>
+        <button id="closeHelp"
+                class="h-8 w-8 rounded-2xl bg-slate-900/80 flex items-center justify-center text-slate-300">
+          <i class="fa-solid fa-xmark text-xs"></i>
+        </button>
+      </div>
+
+      <ul class="text-xs text-slate-100 space-y-1.5 mb-3">
+        <li class="flex items-center gap-2">
+          <span class="h-5 w-5 rounded-full bg-slate-900/70 flex items-center justify-center text-[10px] text-accent-300">
+            <i class="fa-solid fa-face-laugh"></i>
+          </span>
+          <span><span class="font-semibold">جوک</span> – برای دریافت یک جوک کوتاه</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="h-5 w-5 rounded-full bg-slate-900/70 flex items-center justify-center text-[10px] text-emerald-300">
+            <i class="fa-solid fa-book-open"></i>
+          </span>
+          <span><span class="font-semibold">داستان</span> – یک داستان کوتاه و ساده</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="h-5 w-5 rounded-full bg-slate-900/70 flex items-center justify-center text-[10px] text-amber-300">
+            <i class="fa-solid fa-puzzle-piece"></i>
+          </span>
+          <span><span class="font-semibold">معما</span> – یک معمای فکری</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="h-5 w-5 rounded-full bg-slate-900/70 flex items-center justify-center text-[10px] text-pink-300">
+            <i class="fa-solid fa-music"></i>
+          </span>
+          <span><span class="font-semibold">شعر</span> – یک بیت یا دوبیتی کوتاه</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="h-5 w-5 rounded-full bg-slate-900/70 flex items-center justify-center text-[10px] text-emerald-300">
+            <i class="fa-solid fa-calculator"></i>
+          </span>
+          <span><span class="font-semibold">ماشین حساب</span> – رفتن به بخش محاسبات</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="h-5 w-5 rounded-full bg-slate-900/70 flex items-center justify-center text-[10px] text-purple-300">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+          </span>
+          <span><span class="font-semibold">ویرایش تصویر</span> – رفتن به بخش افکت روی عکس</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="h-5 w-5 rounded-full bg-slate-900/70 flex items-center justify-center text-[10px] text-indigo-300">
+            <i class="fa-solid fa-gamepad"></i>
+          </span>
+          <span><span class="font-semibold">دوز / بازی</span> – رفتن به بازی دوز</span>
+        </li>
+      </ul>
+
+      <p class="text-[11px] text-slate-300">
+        هر زمان نیاز داشتی، فقط در چت بنویس <span class="font-semibold text-accent-300">«راهنما»</span>.
+      </p>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    // THEME
+    const htmlEl = document.documentElement;
+    const THEME_KEY = 'tnt_theme';
+
+    function applyTheme(theme) {
+      if (theme === 'light') htmlEl.classList.remove('dark');
+      else htmlEl.classList.add('dark');
+      localStorage.setItem(THEME_KEY, theme);
+      const labelDesktop = document.getElementById('themeLabelDesktop');
+      const labelDrawer = document.getElementById('themeLabelDrawer');
+      if (labelDesktop) labelDesktop.textContent = theme === 'light' ? 'روشن' : 'تیره';
+      if (labelDrawer) labelDrawer.textContent = theme === 'light' ? 'روشن' : 'تیره';
+    }
+
+    (function initTheme() {
+      const saved = localStorage.getItem(THEME_KEY);
+      applyTheme(saved || 'dark');
+    })();
+
+    function toggleTheme() {
+      const isDark = htmlEl.classList.contains('dark');
+      applyTheme(isDark ? 'light' : 'dark');
+    }
+
+    document.getElementById('themeToggleDesktop')?.addEventListener('click', toggleTheme);
+    document.getElementById('themeToggleMobile')?.addEventListener('click', toggleTheme);
+    document.getElementById('themeToggleDrawer')?.addEventListener('click', toggleTheme);
+
+    // NAVIGATION
+    const navLinks = document.querySelectorAll('.nav-link');
+    const quickNavs = document.querySelectorAll('.quick-nav');
+    const views = document.querySelectorAll('.view');
+
+    function setActiveView(targetId) {
+      views.forEach(v => v.id === targetId ? v.classList.remove('hidden') : v.classList.add('hidden'));
+      navLinks.forEach(btn => {
+        if (btn.getAttribute('data-target') === targetId) {
+          btn.classList.add('bg-slate-800/80', 'active-link');
+        } else {
+          btn.classList.remove('bg-slate-800/80', 'active-link');
+        }
+      });
+    }
+
+    [...navLinks, ...quickNavs].forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.getAttribute('data-target');
+        setActiveView(target);
+        closeDrawer();
+      });
+    });
+
+    // DRAWER
+    const drawerOverlay = document.getElementById('drawerOverlay');
+    const openDrawerBtn = document.getElementById('openDrawer');
+    const closeDrawerBtn = document.getElementById('closeDrawer');
+
+    function openDrawer() {
+      drawerOverlay.classList.remove('hidden');
+      drawerOverlay.classList.add('flex');
+    }
+    function closeDrawer() {
+      drawerOverlay.classList.add('hidden');
+      drawerOverlay.classList.remove('flex');
+    }
+
+    openDrawerBtn?.addEventListener('click', openDrawer);
+    closeDrawerBtn?.addEventListener('click', closeDrawer);
+    drawerOverlay?.addEventListener('click', (e) => {
+      if (e.target === drawerOverlay) closeDrawer();
+    });
+
+    // OFFLINE CHAT
+    const chatForm = document.getElementById('chatForm');
+    const chatInput = document.getElementById('chatInput');
+    const chatMessages = document.getElementById('chatMessages');
+    const clearChatBtn = document.getElementById('clearChat');
+    const CHAT_KEY = 'tnt_chat_history';
+
+    const profanityWords = [
+      'کثافت','احمق','خر','گاو','چرت','مزخرف','خفه شو','بی شعور','نفهم','لعنتی'
+    ];
+
+    const responseDB = {
+      joke: [
+        'یه ربات به ربات دیگه گفت: بیا فرار کنیم! گفت: نمی‌شه، ما آفلاینیم 😄',
+        'گفتن چرا این‌قدر خسته‌ای؟ گفت: از بس تو زندگی‌م هی لاگین کردم، هی لاگ‌اوت شدم! 😂',
+        'یه روز مغز من خواست استراحت کنه، گفت: امروز هیچی فکر نکن... دیدم دقیقا شبیه بعضی آدما شدم 😆'
+      ],
+      story: [
+        'روزی روزگاری یه کاربر بود که حتی وقتی اینترنت نداشت، باز هم می‌خواست با هوش مصنوعی حرف بزنه. برای همین TNT رو ساخت تا همیشه یه دوست آفلاین داشته باشه 😊',
+        'یه برنامه‌نویس تصمیم گرفت یه داشبورد بسازه که بدون اینترنت هم کار کنه. هر چی بیشتر روش کار کرد، فهمید بعضی وقت‌ها بهترین چیزها همون چیزهای ساده و آفلاین هستن 🌙',
+        'در دنیایی پر از نوتیفیکیشن و شلوغی، یه نفر تصمیم گرفت یه گوشه‌ی ساکت بسازه؛ جایی که بشه بدون حواس‌پرتی، فقط فکر کرد، خندید و خلاق بود. اسمش رو گذاشت TNT 💫'
+      ],
+      riddle: [
+        'چی همیشه جلوته ولی هیچ‌وقت نمی‌تونی ببینیش؟\n\nجواب: آینده ✨',
+        'اون چیه که هر چی ازش برمی‌دارن، بزرگ‌تر می‌شه؟\n\nجواب: چاله 🕳️',
+        'چی مال توئه، ولی بقیه بیشتر از تو ازش استفاده می‌کنن؟\n\nجواب: اسمت 😄'
+      ],
+      fact: [
+        'می‌دونستی مغز انسان می‌تونه در هر ثانیه هزاران سیگنال پردازش کنه، ولی هنوز هم گاهی رمز وای‌فای یادش می‌ره؟ 🧠',
+        'بدن انسان حدود ۶۰٪ از آب تشکیل شده؛ پس اگر امروز آب خوردی، در واقع داشتی سیستم‌عامل خودت رو آپدیت می‌کردی 💧',
+        'می‌دونستی خندیدن می‌تونه استرس رو کم کنه؟ پس هر وقت تونستی، حتی به یه جوک ساده هم بخند 😄'
+      ],
+      poem: [
+        'زندگی صحنه‌ی یکتای هنرمندی ماست\nهر کسی نغمه‌ی خود خواند و از صحنه رود 🎭',
+        'تو همانی که دلت می‌خواهد باشی\nپس اگر غیر خودت هستی، دوباره شروع کن 🌱',
+        'گر چه دوریم به یاد تو سخن می‌گوییم\nبعد منزل نبود در سفر روحانی ✨'
+      ],
+      guide: [
+        'برای راهنما فقط کافیه بنویسی: «راهنما» تا پنجره‌ی راهنما باز بشه.',
+        'برای جوک بنویس: «جوک» یا «یه جوک بگو».',
+        'برای داستان بنویس: «داستان» یا «یه داستان کوتاه».',
+        'برای معما بنویس: «معما» یا «یه معما بگو».',
+        'برای شعر بنویس: «شعر» یا «یه بیت شعر».',
+        'برای ماشین حساب بنویس: «ماشین حساب».',
+        'برای ویرایش تصویر بنویس: «ویرایش تصویر» یا «عکس».',
+        'برای بازی دوز بنویس: «دوز» یا «بازی».'
+      ],
+      casual: [
+        'من TNT Bot هستم؛ یه ربات آفلاین که سعی می‌کنه تا جایی که می‌تونه همراهت باشه 🤝',
+        'هر سوال روزمره‌ای داشتی بپرس؛ جوابم ساده و خودمونی خواهد بود 😊',
+        'اگه دوست داری، بگو امروز حالت چطوره تا یه جواب بامزه برات بفرستم 😄'
+      ],
+      everyday: [
+        'سوالت روزمره‌ست، ولی من به اینترنت وصل نیستم. با این حال سعی می‌کنم منطقی و مهربون جواب بدم 😊',
+        'جواب دقیق علمی نمی‌تونم بدم، ولی از نگاه یه ربات آفلاین: مهم اینه خودت باهاش حال کنی 😉',
+        'برای خیلی از سوال‌های روزمره، بهترین جواب اینه: ببین چی تو رو آروم‌تر و خوشحال‌تر می‌کنه 💫'
+      ],
+      insultReply: [
+        'اوه اوه! چه اعصابی 😄 بیا به جای فحش، یه جوک بگم حال‌وهوات عوض شه؟',
+        'می‌دونم گاهی آدم کلافه می‌شه، ولی من فقط یه ربات آفلاین مظلومم 🤖❤️',
+        'اگه عصبانی‌ای، اول یه نفس عمیق... بعد بیا یه معما بپرسم حواست پرت شه 😉'
+      ],
+      calculatorHint: [
+        'برای محاسبات دقیق‌تر می‌تونی از بخش «ماشین حساب» در منو استفاده کنی.',
+        'ماشین حساب TNT چهار عمل اصلی رو سریع و بدون رفرش انجام می‌ده.',
+        'از منوی بالا یا چپ، روی «ماشین حساب» بزن تا واردش بشی.'
+      ],
+      imageHint: [
+        'در بخش «ویرایش تصویر» می‌تونی عکس آپلود کنی و افکت‌های مختلف روش بذاری.',
+        'افکت‌های Blur، Grayscale، Sepia، Neon، Cyberpunk، Vintage، Sharpen و چند افکت دیگر در دسترس هستن.',
+        'بعد از اعمال افکت، می‌تونی تصویر خروجی رو دانلود کنی.'
+      ],
+      gameHint: [
+        'در بخش «بازی دوز» می‌تونی با TNT یا به صورت دو نفره دوز ۳×۳ بازی کنی.',
+        'در حالت ربات، تو X هستی و TNT O؛ در حالت دو نفره، بازیکن ۱ X و بازیکن ۲ O است.',
+        'از منوی بالا یا چپ، روی «بازی دوز» بزن تا واردش بشی.'
+      ]
+    };
+
+    function saveChatHistory(history) {
+      localStorage.setItem(CHAT_KEY, JSON.stringify(history));
+    }
+    function loadChatHistory() {
+      const raw = localStorage.getItem(CHAT_KEY);
+      if (!raw) return [];
+      try { return JSON.parse(raw); } catch { return []; }
+    }
+
+    function renderMessage(msg) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'msg-enter flex ' + (msg.sender === 'user' ? 'justify-end' : 'justify-start');
+      const bubble = document.createElement('div');
+      bubble.className =
+        'max-w-[80%] px-3 py-2 rounded-2xl text-xs md:text-sm leading-relaxed whitespace-pre-line ' +
+        (msg.sender === 'user'
+          ? 'bg-primary-600/90 text-white rounded-br-sm'
+          : 'bg-slate-900/90 text-slate-100 rounded-bl-sm');
+      bubble.textContent = msg.text;
+      wrapper.appendChild(bubble);
+      chatMessages.appendChild(wrapper);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function renderHistory() {
+      chatMessages.innerHTML = '';
+      loadChatHistory().forEach(renderMessage);
+    }
+
+    function addMessage(sender, text) {
+      const history = loadChatHistory();
+      const msg = { sender, text, time: Date.now() };
+      history.push(msg);
+      saveChatHistory(history);
+      renderMessage(msg);
+    }
+
+    function containsProfanity(text) {
+      const lower = text.toLowerCase();
+      return profanityWords.some(w => lower.includes(w.toLowerCase()));
+    }
+    function randomFrom(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function isEverydayQuestion(text) {
+      const t = text.trim();
+      return t.includes('؟') ||
+             t.startsWith('چرا') ||
+             t.startsWith('چطور') ||
+             t.startsWith('چطوری') ||
+             t.startsWith('آیا') ||
+             t.startsWith('به نظرت');
+    }
+
+    function handleIntent(text) {
+      const t = text.trim();
+      const lower = t.toLowerCase();
+
+      if (containsProfanity(t)) {
+        return randomFrom(responseDB.insultReply);
+      }
+
+      if (t === 'راهنما' || lower === 'help') {
+        openHelpModal();
+        return 'پنجره‌ی راهنما برات باز شد 😊';
+      }
+
+      if (t.includes('جوک')) return randomFrom(responseDB.joke);
+      if (t.includes('داستان')) return randomFrom(responseDB.story);
+      if (t.includes('معما') || t.includes('چیستان')) return randomFrom(responseDB.riddle);
+      if (t.includes('دانستنی') || t.includes('جالب') || t.includes('واقعیت')) return randomFrom(responseDB.fact);
+      if (t.includes('شعر') || t.includes('بیت')) return randomFrom(responseDB.poem);
+
+      if (t.includes('ماشین حساب') || t.includes('حساب')) {
+        setActiveView('view-calculator');
+        return randomFrom(responseDB.calculatorHint);
+      }
+
+      if (t.includes('ویرایش تصویر') || t.includes('عکس') || t.includes('تصویر')) {
+        setActiveView('view-image');
+        return randomFrom(responseDB.imageHint);
+      }
+
+      if (t.includes('دوز') || t.includes('بازی')) {
+        setActiveView('view-game');
+        return randomFrom(responseDB.gameHint);
+      }
+
+      if (t.includes('راهنما') || lower.includes('guide')) {
+        return randomFrom(responseDB.guide);
+      }
+
+      if (isEverydayQuestion(t)) {
+        return randomFrom(responseDB.everyday);
+      }
+
+      return randomFrom(responseDB.casual);
+    }
+
+    chatForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const text = chatInput.value.trim();
+      if (!text) return;
+      addMessage('user', text);
+      chatInput.value = '';
+      setTimeout(() => {
+        const reply = handleIntent(text);
+        addMessage('bot', reply);
+      }, 250);
+    });
+
+    clearChatBtn.addEventListener('click', () => {
+      localStorage.removeItem(CHAT_KEY);
+      renderHistory();
+      addMessage('bot', 'تاریخچه‌ی چت پاک شد. هر وقت خواستی دوباره شروع کنیم، فقط یه پیام بفرست 😊');
+    });
+
+    renderHistory();
+    if (loadChatHistory().length === 0) {
+      addMessage('bot',
+        'سلام، من TNT Bot آفلاین هستم 🤖\n' +
+        'می‌تونی هر سوال روزمره‌ای بپرسی یا بنویسی: جوک، داستان، معما، شعر، راهنما، ماشین حساب، ویرایش تصویر، دوز و ...'
+      );
+    }
+
+    // HELP MODAL
+    const helpModal = document.getElementById('helpModal');
+    const closeHelpBtn = document.getElementById('closeHelp');
+
+    function openHelpModal() {
+      helpModal.classList.remove('hidden');
+      helpModal.classList.add('flex');
+    }
+    function closeHelpModal() {
+      helpModal.classList.add('hidden');
+      helpModal.classList.remove('flex');
+    }
+
+    closeHelpBtn.addEventListener('click', closeHelpModal);
+    helpModal.addEventListener('click', (e) => {
+      if (e.target === helpModal) closeHelpModal();
+    });
+
+    // CALCULATOR
+    const calcA = document.getElementById('calcA');
+    const calcB = document.getElementById('calcB');
+    const calcOp = document.getElementById('calcOp');
+    const calcBtn = document.getElementById('calcBtn');
+    const calcResult = document.getElementById('calcResult');
+
+    calcBtn.addEventListener('click', () => {
+      const a = parseFloat(calcA.value);
+      const b = parseFloat(calcB.value);
+      const op = calcOp.value;
+
+      if (isNaN(a) || isNaN(b)) {
+        calcResult.textContent = 'لطفاً هر دو عدد را وارد کن';
+        return;
+      }
+
+      let res;
+      if (op === '+') res = a + b;
+      else if (op === '-') res = a - b;
+      else if (op === '*') res = a * b;
+      else if (op === '/') {
+        if (b === 0) {
+          calcResult.textContent = 'تقسیم بر صفر مجاز نیست 😅';
+          return;
+        }
+        res = a / b;
+      }
+      calcResult.textContent = res;
+    });
+
+    // IMAGE EDITOR
+    const imageInput = document.getElementById('imageInput');
+    const effectSelect = document.getElementById('effectSelect');
+    const applyEffectBtn = document.getElementById('applyEffect');
+    const downloadImageBtn = document.getElementById('downloadImage');
+    const canvas = document.getElementById('imageCanvas');
+    const ctx = canvas.getContext('2d');
+    let originalImage = null;
+
+    function loadImageToCanvas(file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+          const maxWidth = 600;
+          const maxHeight = 360;
+          let w = img.width;
+          let h = img.height;
+          const ratio = Math.min(maxWidth / w, maxHeight / h, 1);
+          w *= ratio; h *= ratio;
+          canvas.width = w;
+          canvas.height = h;
+          ctx.clearRect(0, 0, w, h);
+          ctx.drawImage(img, 0, 0, w, h);
+          originalImage = img;
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    imageInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      loadImageToCanvas(file);
+    });
+
+    function getFilterString(effect) {
+      switch (effect) {
+        case 'blur': return 'blur(3px)';
+        case 'grayscale': return 'grayscale(1)';
+        case 'sepia': return 'sepia(1)';
+        case 'neon': return 'brightness(1.3) contrast(1.4) saturate(1.6)';
+        case 'cyberpunk': return 'contrast(1.6) saturate(2.2) hue-rotate(310deg)';
+        case 'vintage': return 'sepia(0.7) contrast(1.1) brightness(1.05)';
+        case 'sharpen': return 'contrast(1.4) brightness(1.02)';
+        case 'bright': return 'brightness(1.3)';
+        case 'contrast': return 'contrast(1.8)';
+        case 'invert': return 'invert(1)';
+        case 'hue': return 'hue-rotate(180deg) saturate(1.4)';
+        default: return 'none';
+      }
+    }
+
+    function applyEffect() {
+      if (!originalImage) return;
+      const effect = effectSelect.value;
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+      ctx.filter = getFilterString(effect);
+      ctx.drawImage(originalImage, 0, 0, w, h);
+      ctx.filter = 'none';
+    }
+
+    applyEffectBtn.addEventListener('click', applyEffect);
+
+    downloadImageBtn.addEventListener('click', () => {
+      if (!canvas.width || !canvas.height) return;
+      const link = document.createElement('a');
+      link.download = 'tnt-edited.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+
+    // TIC TAC TOE
+    const boardEl = document.getElementById('tictactoeBoard');
+    const cells = Array.from(boardEl.querySelectorAll('.tictactoe-cell'));
+    const gameStatus = document.getElementById('gameStatus');
+    const resetGameBtn = document.getElementById('resetGame');
+    const modeBotBtn = document.getElementById('modeBot');
+    const modePvpBtn = document.getElementById('modePvp');
+    const scoreXEl = document.getElementById('scoreX');
+    const scoreOEl = document.getElementById('scoreO');
+    const scoreDrawEl = document.getElementById('scoreDraw');
+
+    let board = Array(9).fill(null);
+    let currentPlayer = 'X';
+    let gameOver = false;
+    let mode = 'bot'; // 'bot' or 'pvp'
+    let scoreX = 0;
+    let scoreO = 0;
+    let scoreDraw = 0;
+
+    function updateModeButtons() {
+      modeBotBtn.classList.remove('bg-primary-600/70','border-primary-400');
+      modePvpBtn.classList.remove('bg-primary-600/70','border-primary-400');
+      if (mode === 'bot') {
+        modeBotBtn.classList.add('bg-primary-600/70','border-primary-400');
+      } else {
+        modePvpBtn.classList.add('bg-primary-600/70','border-primary-400');
+      }
+    }
+
+    function updateScores() {
+      scoreXEl.textContent = scoreX;
+      scoreOEl.textContent = scoreO;
+      scoreDrawEl.textContent = scoreDraw;
+    }
+
+    function checkWinner(b) {
+      const lines = [
+        [0,1,2],[3,4,5],[6,7,8],
+        [0,3,6],[1,4,7],[2,5,8],
+        [0,4,8],[2,4,6]
+      ];
+      for (const [a, c, d] of lines) {
+        if (b[a] && b[a] === b[c] && b[a] === b[d]) return b[a];
+      }
+      if (b.every(x => x)) return 'draw';
+      return null;
+    }
+
+    function updateBoardUI() {
+      cells.forEach((cell, idx) => {
+        cell.textContent = board[idx] || '';
+        cell.classList.remove('text-emerald-300','text-pink-300');
+        if (board[idx] === 'X') cell.classList.add('text-emerald-300');
+        if (board[idx] === 'O') cell.classList.add('text-pink-300');
+      });
+    }
+
+    function setStatus(text, colorClass = 'text-emerald-300') {
+      gameStatus.textContent = text;
+      gameStatus.classList.remove('text-emerald-300','text-pink-300','text-amber-300');
+      gameStatus.classList.add(colorClass);
+    }
+
+    function resetGame() {
+      board = Array(9).fill(null);
+      currentPlayer = 'X';
+      gameOver = false;
+      updateBoardUI();
+      if (mode === 'bot') {
+        setStatus('نوبت توست (X در برابر TNT)', 'text-emerald-300');
+      } else {
+        setStatus('نوبت بازیکن ۱ (X)', 'text-emerald-300');
+      }
+    }
+
+    function aiMove() {
+      if (gameOver || mode !== 'bot') return;
+      const empty = board.map((v, i) => v ? null : i).filter(v => v !== null);
+      if (empty.length === 0) return;
+      const idx = empty[Math.floor(Math.random() * empty.length)];
+      board[idx] = 'O';
+      updateBoardUI();
+      const winner = checkWinner(board);
+      if (winner === 'O') {
+        gameOver = true;
+        scoreO++;
+        updateScores();
+        setStatus('TNT برنده شد! دوباره تلاش کن 😄', 'text-pink-300');
+      } else if (winner === 'draw') {
+        gameOver = true;
+        scoreDraw++;
+        updateScores();
+        setStatus('بازی مساوی شد 🤝', 'text-amber-300');
+      } else {
+        currentPlayer = 'X';
+        setStatus('نوبت توست (X)', 'text-emerald-300');
+      }
+    }
+
+    cells.forEach((cell, idx) => {
+      cell.addEventListener('click', () => {
+        if (gameOver || board[idx]) return;
+
+        if (mode === 'bot') {
+          if (currentPlayer !== 'X') return;
+          board[idx] = 'X';
+          updateBoardUI();
+          const winner = checkWinner(board);
+          if (winner === 'X') {
+            gameOver = true;
+            scoreX++;
+            updateScores();
+            setStatus('تو برنده شدی! عالی بود 😎', 'text-emerald-300');
+          } else if (winner === 'draw') {
+            gameOver = true;
+            scoreDraw++;
+            updateScores();
+            setStatus('بازی مساوی شد 🤝', 'text-amber-300');
+          } else {
+            currentPlayer = 'O';
+            setStatus('نوبت TNT است...', 'text-pink-300');
+            setTimeout(aiMove, 400);
+          }
+        } else {
+          board[idx] = currentPlayer;
+          updateBoardUI();
+          const winner = checkWinner(board);
+          if (winner === 'X') {
+            gameOver = true;
+            scoreX++;
+            updateScores();
+            setStatus('بازیکن ۱ (X) برنده شد! 🎉', 'text-emerald-300');
+          } else if (winner === 'O') {
+            gameOver = true;
+            scoreO++;
+            updateScores();
+            setStatus('بازیکن ۲ (O) برنده شد! 🎉', 'text-pink-300');
+          } else if (winner === 'draw') {
+            gameOver = true;
+            scoreDraw++;
+            updateScores();
+            setStatus('بازی مساوی شد 🤝', 'text-amber-300');
+          } else {
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            if (currentPlayer === 'X') {
+              setStatus('نوبت بازیکن ۱ (X)', 'text-emerald-300');
+            } else {
+              setStatus('نوبت بازیکن ۲ (O)', 'text-pink-300');
+            }
+          }
+        }
+      });
+    });
+
+    resetGameBtn.addEventListener('click', resetGame);
+
+    modeBotBtn.addEventListener('click', () => {
+      mode = 'bot';
+      updateModeButtons();
+      resetGame();
+    });
+
+    modePvpBtn.addEventListener('click', () => {
+      mode = 'pvp';
+      updateModeButtons();
+      resetGame();
+    });
+
+    updateModeButtons();
+    updateScores();
+    resetGame();
+  </script>
+</body>
+</html>
